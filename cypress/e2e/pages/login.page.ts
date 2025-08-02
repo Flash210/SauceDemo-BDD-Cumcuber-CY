@@ -1,37 +1,41 @@
-class LoginPage {
-    elements = {
-        usernameInput: () => cy.get('[data-test="username"]'),
-        passwordInput: () => cy.get('[data-test="password"]'),
-        loginButton: () => cy.get('[data-test="login-button"]'),
-        errorMessage: () => cy.get('[data-test="error"]')
-    };
 
+import { LoginLocators } from '../locators/login/login_locators';
+
+export class LoginPage {
     visit() {
         cy.visit('/');
     }
 
     enterUsername(username: string) {
-        this.elements.usernameInput().type(username);
+        !username
+            ? cy.get(LoginLocators.usernameField).clear()
+            : cy.get(LoginLocators.usernameField).clear().type(username);
     }
 
     enterPassword(password: string) {
-        this.elements.passwordInput().type(password);
+        !password
+            ? cy.get(LoginLocators.passwordField).clear()
+            : cy.get(LoginLocators.passwordField).clear().type(password);
     }
 
     clickLogin() {
-        this.elements.loginButton().click();
+        cy.get(LoginLocators.loginButton).click();
     }
 
-    shouldShowError(message: string) {
-        this.elements.errorMessage()
+    login(username: string, password: string) {
+        this.enterUsername(username);
+        this.enterPassword(password);
+        this.clickLogin();
+    }
+
+    assertErrorMessage(expectedMessage: string) {
+        cy.get(LoginLocators.errorMessage)
             .should('be.visible')
-            .and('have.text', message);
+            .and('have.text', expectedMessage);
     }
 
-    shouldBeOnInventoryPage() {
+    assertInventoryPageVisible() {
         cy.url().should('include', '/inventory.html');
-        cy.get('.inventory_list').should('be.visible');
+        cy.get(LoginLocators.inventoryList).should('be.visible');
     }
 }
-
-export default new LoginPage();
