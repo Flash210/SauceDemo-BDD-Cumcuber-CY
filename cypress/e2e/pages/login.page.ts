@@ -1,5 +1,5 @@
 
-import { LoginLocators } from '../locators/login/login_locators';
+import { LoginLocators } from '../locators/login_locators';
 
 export class LoginPage {
     visit() {
