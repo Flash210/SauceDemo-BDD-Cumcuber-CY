@@ -1,7 +1,6 @@
-
-
+/// <reference types="cypress" />
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
-import { LoginPage } from '../../e2e/pages/login.page';
+import { LoginPage } from '../../e2e/pages/login_page';
 const loginPage = new LoginPage();
 
 Given('I am on the login page', () => {
@@ -9,7 +8,7 @@ Given('I am on the login page', () => {
 });
 
 When('I enter valid credentials', () => {
-  loginPage.login('standard_user', 'secret_sauce');
+  loginPage.login('standard_user', 'secret_sauce'); // Use valid credentials
 });
 
 Then('I should see the inventory page', () => {
@@ -17,21 +16,17 @@ Then('I should see the inventory page', () => {
 });
 
 When('I login with an empty username and a valid password', () => {
-  loginPage.enterUsername('');
-  loginPage.enterPassword('secret_sauce');
-  loginPage.clickLogin();
+  loginPage.login('', 'secret_sauce'); // Empty username
+});
+
+Then('I should see an error message {string}', (expectedMessage: string) => {
+  loginPage.assertErrorMessage(expectedMessage);
 });
 
 When('I login with a valid username and an empty password', () => {
-  loginPage.enterUsername('standard_user');
-  loginPage.enterPassword('');
-  loginPage.clickLogin();
+  loginPage.login('standard_user', ''); // Empty password
 });
 
 When('I login with invalid credentials', () => {
-  loginPage.login('invalid_user', 'wrong_password');
-});
-
-Then('I should see an error message {string}', (errorMessage: string) => {
-  loginPage.assertErrorMessage(errorMessage);
+  loginPage.login('invalid_user', 'invalid_password'); // Invalid credentials
 });
