@@ -37,22 +37,7 @@ Given("I have {int} items in the cart", (count: number) => {
 
 /* 🔹 Scenario: Add item to cart */
 When("I add an item to the cart", () => {
-  cy.get(".inventory_item")
-    .first()
-    .within(() => {
-      cy.get(".inventory_item_name")
-        .invoke("text")
-        .then((text) => {
-          addedItemName = text.trim();
-        });
-      cy.get(".inventory_item_price")
-        .invoke("text")
-        .then((price) => {
-          addedItemPrice = price.trim();
-        });
-      cy.get('button[id^="add-to-cart"]').click();
-    });
-  cy.get(".shopping_cart_container").click(); // open cart
+  cartPage.addItemToCart(0);
 });
 
 Then("cart icon should show 1 item", () => {
@@ -60,44 +45,12 @@ Then("cart icon should show 1 item", () => {
 });
 
 Then("the item should be in the cart with correct details", () => {
-  cy.get(".cart_item")
-    .first()
-    .within(() => {
-      cy.get(".inventory_item_name").should("have.text", addedItemName);
-      cy.get(".inventory_item_price").should("have.text", addedItemPrice);
-    });
+  cartPage.shoudlShowCartItemCount();
 });
 
 /* 🔹 Add multiple items to cart */
 When("I add {int} items to the cart", (count: number) => {
-  addedItems = []; // reset before adding
-
-  cy.get(".inventory_list") 
-    .find(".inventory_item")
-    .should("have.length.at.least", count)
-    .then(($items) => {
-      for (let i = 0; i < count; i++) {
-        cy.wrap($items[i]).within(() => {
-          cy.get(".inventory_item_name")
-            .invoke("text")
-            .then((nameText) => {
-              const name = nameText.trim();
-
-              cy.get(".inventory_item_price")
-                .invoke("text")
-                .then((priceText) => {
-                  const price = priceText.trim();
-                  addedItems.push({ name, price });
-                });
-            });
-
-          cy.get('button[id^="add-to-cart"]').click();
-        });
-      }
-    });
-
-  // Open the cart after adding items
-  cy.get(".shopping_cart_container").click();
+  cartPage.addMultipleItemsToCart(count);
 });
 
 /* 🔹 Check cart icon shows correct badge count */
@@ -107,14 +60,7 @@ Then("cart icon should show {int} items", (expectedCount: number) => {
 
 /* 🔹 Validate all items have correct name and price */
 Then("the items should be in the cart with correct details", () => {
-  cy.get(".cart_item").each(($el, index) => {
-    const expected = addedItems[index!];
-
-    cy.wrap($el).within(() => {
-      cy.get(".inventory_item_name").should("have.text", expected.name);
-      cy.get(".inventory_item_price").should("have.text", expected.price);
-    });
-  });
+  cartPage.validateAlltemsDetails();
 });
 
 /* 🔹 Scenario: Remove an item from the cart */
@@ -132,4 +78,3 @@ Then("the cart should show {int} item(s)", (expectedCount: number) => {
     cy.wrap(count).should("eq", expectedCount);
   });
 });
-
